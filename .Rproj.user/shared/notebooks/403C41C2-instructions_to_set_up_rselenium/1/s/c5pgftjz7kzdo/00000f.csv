@@ -1,0 +1,110 @@
+"0","wdman::selenium()
+"
+"2","checking Selenium Server versions:
+"
+"2","BEGIN: PREDOWNLOAD
+"
+"2","BEGIN: DOWNLOAD
+"
+"2","BEGIN: POSTDOWNLOAD
+"
+"2","checking chromedriver versions:
+"
+"2","BEGIN: PREDOWNLOAD
+"
+"2","BEGIN: DOWNLOAD
+"
+"2","BEGIN: POSTDOWNLOAD
+"
+"2","checking geckodriver versions:
+"
+"2","BEGIN: PREDOWNLOAD
+"
+"2","BEGIN: DOWNLOAD
+"
+"2","BEGIN: POSTDOWNLOAD
+"
+"2","checking phantomjs versions:
+"
+"2","BEGIN: PREDOWNLOAD
+"
+"2","BEGIN: DOWNLOAD
+"
+"2","BEGIN: POSTDOWNLOAD
+"
+"1","$process
+"
+"1","PROCESS 'file4a0875c0517e.bat', finished.
+"
+"1","
+"
+"1","$output
+"
+"1","function (timeout = 0L) 
+"
+"1","{
+"
+"1","    infun_read(seleniumdrv, log, ""stdout"", timeout = timeout, 
+"
+"1","        outfile = pfile[[""out""]], errfile = pfile[[""err""]])
+"
+"1","}
+"
+"1","<bytecode: 0x000001ed3df825d8>
+"
+"1","<environment: 0x000001ed43a47ce0>
+"
+"1","
+"
+"1","$error
+"
+"1","function (timeout = 0L) 
+"
+"1","{
+"
+"1","    infun_read(seleniumdrv, log, ""stderr"", timeout = timeout, 
+"
+"1","        outfile = pfile[[""out""]], errfile = pfile[[""err""]])
+"
+"1","}
+"
+"1","<bytecode: 0x000001ed3df85ed8>
+"
+"1","<environment: 0x000001ed43a47ce0>
+"
+"1","
+"
+"1","$stop
+"
+"1","function () 
+"
+"1","{
+"
+"1","    seleniumdrv$kill()
+"
+"1","}
+"
+"1","<bytecode: 0x000001ed3df858f0>
+"
+"1","<environment: 0x000001ed43a47ce0>
+"
+"1","
+"
+"1","$log
+"
+"1","function () 
+"
+"1","{
+"
+"1","    infun_read(seleniumdrv, log, outfile = pfile[[""out""]], errfile = pfile[[""err""]])
+"
+"1","    as.list(log)
+"
+"1","}
+"
+"1","<bytecode: 0x000001ed3df85730>
+"
+"1","<environment: 0x000001ed43a47ce0>
+"
+"1","
+"

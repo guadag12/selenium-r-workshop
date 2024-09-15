@@ -1,0 +1,22 @@
+# 1. Settings and check google chorme version: chrome://settings/help
+
+# 2. Download Chrome driver and add it in the folder: 
+https://googlechromelabs.github.io/chrome-for-testing/
+
+"C:\Users\User\AppData\Local\binman\binman_chromedriver\win32\128.0.6613.121"
+
+
+# 2.b. If everything is okey this should run okey: "wdman::selenium()"
+
+# 3. Run: "wdman::selenium(retcommand = TRUE, check = FALSE)". The return message add it in the CMD/terminal: ""C:\\PROGRA~2\\COMMON~1\\Oracle\\Java\\javapath\\java.exe c(\"-Dwebdriver.chrome.driver=\\\"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\binman\\\\binman_chromedriver\\\\win32\\\\128.0.6613.121/chromedriver.exe\\\"\", \"-Dwebdriver.chrome.driver=\\\"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\binman\\\\binman_chromedriver\\\\win32\\\\128.0.6613.121/LICENSE.chromedriver\\\"\", \"-Dwebdriver.chrome.driver=\\\"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\binman\\\\binman_chromedriver\\\\win32\\\\128.0.6613.121/THIRD_PARTY_NOTICES.chromedriver\\\"\") -Dwebdriver.gecko.driver=\"C:\\Users\\User\\AppData\\Local\\binman\\binman_geckodriver\\win64\\0.35.0/geckodriver.exe\" -Dphantomjs.binary.path=\"C:\\Users\\User\\AppData\\Local\\binman\\binman_phantomjs\\windows\\2.1.1/phantomjs-2.1.1-windows/bin/phantomjs.exe\" -jar \"C:\\Users\\User\\AppData\\Local\\binman\\binman_seleniumserver\\generic\\4.0.0-alpha-2/selenium-server-standalone-4.0.0-alpha-2.jar\" -port 4567"
+
+# 4. Run this in R with the correspond port: "library(RSelenium)
+
+# Asume que Selenium está corriendo en el puerto ______
+remDr <- remoteDriver(remoteServerAddr = "localhost", port = ______L, browserName = "chrome")
+
+# Intenta abrir el navegador
+remDr$open()"
+
+# 5. Now you can run it in R:
+

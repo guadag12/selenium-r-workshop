@@ -1,0 +1,184 @@
+library('httr')
+library(RSelenium)
+library(tidyverse)
+library(netstat)
+library(rvest)
+
+library(wdman)
+library(RSelenium)
+
+library(RSelenium)
+
+# Asume que Selenium está corriendo en el puerto 4567
+remDr <- remoteDriver(remoteServerAddr = "localhost", port = 4567L, browserName = "chrome")
+
+# Intenta abrir el navegador
+remDr$open()
+
+
+wdman::selenium()
+wdman::selenium(retcommand = TRUE, check = FALSE)
+
+# Inicia el servidor Selenium directamente
+selServ <- selenium(verbose = FALSE, port = 4567L) # Iniciar Selenium en un puerto específico
+remDr <- remoteDriver(remoteServerAddr = "localhost", port = 4567L, browserName = "chrome")
+
+# Abre el navegador
+remDr$open()
+
+
+binman::list_versions("chromedriver")
+
+rD <- rsDriver(browser = "chrome", 
+               chromever = "128.0.6613.121", #"114.0.5735.90", # Ignorar la búsqueda automática
+               verbose = FALSE, 
+               port = 5556L
+)
+
+# 9515
+
+remDr <- rD[["client"]]
+
+
+# open the webpage
+remDr$navigate("https://www.congress.gov/members")
+
+# s# Esperar a que la página cargue completamente (puede ajustar el tiempo)
+Sys.sleep(5)
+
+# Obtener el código fuente de la página
+page_source <- remDr$getPageSource()[[1]]
+
+# Parsear el código fuente con rvest
+page_html <- read_html(page_source)
+
+# Extraer los nombres de los miembros
+names <- page_html %>% html_nodes(".result-heading a") %>% html_text()
+members_urls <- paste0("https://www.congress.gov", page_html %>% html_nodes(".result-heading a") %>% html_attr("href"))
+
+# Extraer los estados
+states <- page_html %>% html_nodes(".result-item:contains('State:') span") %>% html_text()
+
+# Extraer los partidos
+parties <- page_html %>% html_nodes(".result-item:contains('Party:') span") %>% html_text()
+
+# Extraer los periodos de servicio
+service_nodes <- page_html %>% html_nodes(".result-item:contains('Served:') ul.member-served")
+
+# Concatenar los periodos de servicio para cada candidato en un solo character
+service <- service_nodes %>% lapply(function(x) {
+  x %>% html_nodes("li") %>% html_text() %>% paste(collapse = ", ")
+}) %>% unlist()
+
+# Crear un dataframe temporal para la página actual
+datos_pagina <- data.frame(
+  Names = names,
+  State = states,
+  Party = parties,
+  Service = service,
+  Members_URL = members_urls,
+  stringsAsFactors = FALSE
+)
+# Imprimir los datos
+print(datos_congreso)
+
+rm(datos_congreso)
+base_url <- "https://www.congress.gov/members"  # Reemplaza con la URL base antes de ?page=
+
+datos_congreso <- data.frame(
+  Names = NULL,
+  State = NULL,
+  Party = NULL,
+  Service = NULL,
+  Members_URL = NULL,
+  stringsAsFactors = FALSE
+)
+
+total_paginas <-26
+for (pagina in 1:total_paginas) {
+  # Navegar a la página específica
+  url_pagina <- paste0(base_url, "?page=", pagina)
+  remDr$navigate(url_pagina)
+  
+  # Esperar que la página cargue completamente
+  Sys.sleep(5)
+  
+  # Obtener el código fuente de la página
+  page_source <- remDr$getPageSource()[[1]]
+  
+  # Parsear el código fuente con rvest
+  page_html <- read_html(page_source)
+  
+  # Extraer los nombres de los miembros
+  names <- page_html %>% html_nodes(".result-heading a") %>% html_text()
+  members_urls <- paste0("https://www.congress.gov", page_html %>% html_nodes(".result-heading a") %>% html_attr("href"))
+  
+  # Extraer los estados
+  states <- page_html %>% html_nodes(".result-item:contains('State:') span") %>% html_text()
+  
+  # Extraer los partidos
+  parties <- page_html %>% html_nodes(".result-item:contains('Party:') span") %>% html_text()
+  
+  # Extraer los periodos de servicio
+  service_nodes <- page_html %>% html_nodes(".result-item:contains('Served:') ul.member-served")
+  
+  # Concatenar los periodos de servicio para cada candidato en un solo character
+  service <- service_nodes %>% lapply(function(x) {
+    x %>% html_nodes("li") %>% html_text() %>% paste(collapse = ", ")
+  }) %>% unlist()
+  
+  # Crear un dataframe temporal para la página actual
+  datos_pagina <- data.frame(
+    Names = names,
+    State = states,
+    Party = parties,
+    Service = service,
+    Members_URL = members_urls,
+    stringsAsFactors = FALSE
+  )
+  
+  # Añadir los datos de la página actual al dataframe total
+  datos_congreso <- bind_rows(datos_congreso, datos_pagina)
+}
+class(datos_congreso)
+datos_congreso_ <- datos_congreso %>%
+  distinct(Names, State,Party, Service, Members_URL, .keep_all = T)
+library(stringr)
+datos_congreso_ <- datos_congreso_ %>%
+  mutate(Names = str_replace(Names, "-(?=.*,)", "."),
+         Names = str_replace(Names, "Barbara-Rose", "Barbara Rose"))
+
+datos_congreso_ <- separate(data = datos_congreso_, col = "Names", 
+                            into = c("Name", "Chamber"), 
+         sep = "-")
+datos_congreso_ <- separate(data = datos_congreso_, col = "Name", 
+                            into = c("Surname", "Name", "Suffix"), 
+                            sep = ", ")
+#slice(datos_congreso_, 48)
+write.csv(datos_congreso_, "datos_congreso.csv", row.names = TRUE)
+
+
+# Click element:
+Sys.sleep(5)
+checkbox_element <- remDr$findElement(using = 'css selector', "#facetItemcongress118__2023-2024_input")
+checkbox_element$clickElement()
+
+
+# Input message
+
+# Esperar que la página cargue completamente
+Sys.sleep(5)
+
+# Localizar la barra de búsqueda utilizando un selector de XPath o CSS
+search_box <- remDr$findElement(using = 'css selector', "#search")
+
+# Ingresar el nombre del representante en la barra de búsqueda
+search_box$sendKeysToElement(list("Adams, Alma S."))  # Reemplaza con el nombre específico
+
+# Localizar el botón de búsqueda y hacer clic en él
+remDr$executeScript("document.querySelector('#search-submit').click();")
+
+Sys.sleep(5)
+
+remDr$close()
+rD$server$stop()

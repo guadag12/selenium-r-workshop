@@ -1,0 +1,672 @@
+---
+title: "Web Scraping and Data Collection Using RSelenium:"
+subtitle: "Scraping Sotheby's art auctions"
+author: 
+  - name: "<h4><strong>Guadalupe González</strong></h4>"
+    email: "guadag12@umd.edu<br></br>"
+date: 09/25/2024
+date-format: "MMM D, YYYY"
+bibliography: references.bib
+execute: 
+  echo: true
+format: 
+  revealjs:
+    favicon: "selenium.png" # Especifica la ruta a tu archivo favicon
+    width: 1600
+    height: 900
+    incremental: false
+    footer: "<div class='custom-footer'><span>Scraping with [RSelenium](https://github.com/ropensci/RSelenium)</span><img src='https://github.com/guadag12/repo_datasets/raw/master/logo-umd/umd.png' class='footer-logo' /></div>"
+    theme: [default, style]
+    link-external-newwindow: true
+    df-print: kable
+    footer-logo-link: "https://umd.edu/"
+    chalkboard: true
+    smaller: true
+    title-slide-attributes:
+      data-background-color: "#e21833"
+from: markdown+emoji
+---
+
+## Materials for today's class:
+
+## Configuration issues first!
+
+We are going to use **Chrome** to do the scraping. So, the following instuctions are needed.
+
+## 1. **Check Your Google Chrome Version:**
+
+Open Google Chrome and navigate to <chrome://settings/help> to find out your current Chrome version.
+
+![](img/settings_help_windows.PNG){.nostretch fig-align="center" width="1300px"}
+
+## 2. Execute the following command in R:
+
+::: fragment
+```{r}
+wdman::selenium(retcommand = TRUE, check = FALSE)
+```
+:::
+
+::: fragment
+<br>
+
+After that go to the folder mentioned in the command (copy and paste the one that you got): "C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\binman\\\\binman_chromedriver\\\\win32\\\\"
+
+So I will look for: "C:/Users/User/AppData/Local/binman/binman_chromedriver/win32"
+:::
+
+## 3. **ChromeDriver:**
+
+a.  Download the ChromeDriver matching your Chrome version from [Chrome for Testing](https://googlechromelabs.github.io/chrome-for-testing/).
+
+If you are using Mac, you will download the Mac version that ajust to your Google Chrome Version. If you are using Windows, the same for Windows:
+
+::: columns
+::: {.column width="50%"}
+::: fragment
+![](img/settings_help_windows_2.PNG){.nostretch fig-align="center" width="1500px"}
+:::
+:::
+
+::: {.column width="50%"}
+::: fragment
+![](img/settings_chrome_driver_version.PNG){.nostretch fig-align="center" width="1500px"}
+:::
+:::
+:::
+
+## 3. **ChromeDriver:**
+
+3.  
+
+    b.  After unzip the download chromedriver, move it the downloaded file to the directory selected in step 2. In my case: "C:/Users/User/AppData/Local/binman/binman_chromedriver/win32"
+
+{{< video chromedriver_set_up.mp4 width="1200" height="650" >}}
+
+## 4. **Verify Installation:**
+
+Check if the ChromeDriver is correctly set up by running:
+
+::: fragment
+```{r}
+# Check and install wdman if not already installed
+if (!requireNamespace("wdman", quietly = TRUE)) {
+  install.packages("wdman")
+}
+
+wdman::selenium()
+```
+:::
+
+## 5. Start Selenium Server:
+
+::: fragment
+a.  Execute the following command in R:
+
+```{r}
+wdman::selenium(retcommand = TRUE, check = FALSE)
+```
+:::
+
+::: fragment
+b.  Run the generated command in the Terminal. Example:
+
+```{r, eval = FALSE}
+/usr/bin/java -Dwebdriver.chrome.driver="/usr/local/bin/chromedriver" -jar "/usr/local/bin/selenium-server-standalone.jar" -port 4567
+```
+:::
+
+## 5. Start Selenium Server:
+
+c.  Connect RSelenium to the Running Selenium Server:
+
+In R, establish the remote connection as follows:
+
+```{r}
+library(RSelenium)
+
+# Assuming Selenium is running on the specified port (the port should be the same that you have in 5.b.)
+remDr <- remoteDriver(remoteServerAddr = "localhost", port = 4567L, browserName = "chrome")
+
+# Attempt to open the browser
+remDr$open()
+```
+
+```{r, include=FALSE, echo = FALSE}
+remDr$close()
+```
+
+## 6. If everything works, you will have a new window like this:
+
+![](img/new_windows.PNG){.nostretch fig-align="center" width="800px"}
+
+## What is Selenium? Why use Selenium?
+
+::: fragment
+-   Selenium is an **open-source framework** used for automating web browsers. Allow us to **interact with web elements on web pages as if a human user were interacting with the browser**. Example: We will see the mouse simulating the movement of us in the webpage.
+:::
+
+::: fragment
+-   It is supported by R in the package **RSelenium**.
+:::
+
+## When to Use Selenium:
+
+::: fragment
+1.  **Dynamic Web Pages**. Example: Javascripts websites (<https://www.nytimes.com/>)
+:::
+
+::: fragment
+2.  **Interactive Elements**
+:::
+
+::: fragment
+3.  **Testing and Automation**
+:::
+
+## When NOT use Selenium:
+
+::: fragment
+1.  **Static Web Pages**. Example: [GVPT Faculty](https://gvpt.umd.edu/facultystaff/Faculty)
+:::
+
+::: fragment
+2.  **Simple Scraping Tasks**. Example: [Wikipedia's pages](https://es.wikipedia.org/wiki/San_Carlos_de_Bariloche)
+:::
+
+## Summary:
+
+::: columns
+::: {.column width="50%"}
+::: fragment
+Use **rvest**: static content, performing straightforward quick data extraction tasks, needing speed and simplicity.
+
+<br> <br>
+:::
+
+::: fragment
+![](img/faculty_gvpt.PNG){.nostretch fig-align="center" width="750px"}
+
+<https://gvpt.umd.edu/facultystaffgroup/Faculty>
+:::
+:::
+
+::: {.column width="50%"}
+::: fragment
+Use **Selenium**: interact with dynamic web content, perform complex navigations, automate testing, or scrape data from interactive elements that rely on JavaScript.
+:::
+
+<br>
+
+::: fragment
+![](img/nytimes.PNG)
+
+[https://www.nytimes.com/](https://www.nytimes.com/){.nostretch fig-align="center" width="400px"}
+:::
+:::
+:::
+
+## Rvest: need help? ![](https://github.com/rstudio/hex-stickers/raw/main/PNG/rvest.png){.nostretch fig-align="center" width="70px"}
+
+<br>
+
+::: fragment
+A workshop on Rvest has been made by Evan Jones here: <https://github.com/gsa-gvpt/gvpt-methods/tree/master/webscraping>
+:::
+
+## Auctions in [Sothebys](https://www.sothebys.com/)
+
+![](img/sothebys_website.PNG){.nostretch fig-align="center" width="1000px"}
+
+<br>
+
+Website: [https://www.sothebys.com/en/auctions/2012/latin-american-art-n08862.html](https://www.sothebys.com/en/auctions/2012/latin-american-art-n08862.html){.center}
+
+## Get the source page sintax (right click on the website + inspect element):
+
+<br>
+
+![](img/source_page_sothebys.PNG){.nostretch fig-align="center" width="1000px"}
+
+## HTML Sintaxis
+
+![](img/2.png){.nostretch fig-align="center" width="800px"}
+
+## HTML Sintaxis for today
+
+![](img/1.png){.nostretch fig-align="center" width="800px"}
+
+
+## CSS (1)
+
+![](img/3.png){.nostretch fig-align="center" width="800px"}
+
+## CSS (2)
+
+![](img/4.png){.nostretch fig-align="center" width="800px"}
+
+## XPATH
+
+**XPath (XML Path Language) is a query language** used for selecting nodes\* from an XML document, which can also be applied to HTML documents.
+
+XPath allows us to combine with HTML, CSS, and Selenium to have a more efficient way to to interact with elements on a webpage and extract information.
+
+\* nodes: *"individual parts or components of a document's structure"*. A node can represent different types of elements (text, elements —html—, attributes —css—)
+
+## XPATH in Selenium
+
+![](img/5.png){.nostretch fig-align="center" width="800px"}
+
+## XPATH in Selenium
+
+![](img/6.png){.nostretch fig-align="center" width="800px"}
+
+## Starting to scrape:
+
+::: fragment
+0.  Load packages:
+
+```{r}
+library(RSelenium)
+library(tidyverse)
+library(netstat)
+library(httr)
+library(wdman)
+library(rvest)
+```
+:::
+
+::: fragment
+1.  Go to the website that we want to scrape:
+
+```{r}
+# Selenium is running in the port that we said:
+remDr <- remoteDriver(remoteServerAddr = "localhost", port = 4567L, browserName = "chrome")
+
+# Open the Chrome:
+remDr$open()
+
+# Tell the webpage that we want to scrape
+remDr$navigate("https://www.sothebys.com/en/auctions/2012/latin-american-art-n08862.html")
+```
+:::
+
+## Scraping the author's name:
+
+::: fragment
+1.  Get the source page:
+
+```{r}
+page_source <- remDr$getPageSource()[[1]] #raw HTML source code
+page_html <- read_html(page_source) #parses the raw HTML into a format that allows for HTML element selection and manipulation
+page_html
+```
+:::
+
+<br>
+
+::: fragment
+2.  Extract Action Items and Author's name:
+
+```{r}
+artworks <- page_html %>% html_nodes(xpath = '//li[@class="AuctionsModule-results-item"]')
+artworks
+```
+:::
+
+## Scraping the author's name:
+
+::: fragment
+3.  Extract Author's name:
+
+```{r}
+author <- artworks %>% html_node(xpath = './/div[@class="title "]/a') %>% html_text(trim = TRUE)
+author
+```
+:::
+
+## Scraping the title of each piece of art:
+
+::: fragment
+1.  Extract Title of the art piece:
+
+```{r}
+title <- artworks %>% html_node(xpath = './/div[@class="description"]') %>% html_text(trim = TRUE)
+title
+```
+:::
+
+## Scraping the estimate value of each piece of art:
+
+::: fragment
+1.  Extract price of the art piece:
+
+```{r}
+estimate_text <- artworks %>% html_node(xpath = './/div[@class="estimate"]') %>% html_text(trim = TRUE)
+estimate_text
+```
+:::
+
+::: fragment
+2.  Split the vector into two separate vectors—one containing the values before the dash (" –") and another containing the values after the dash—:
+
+```{r}
+result <- tibble(estimate_text) %>%
+  mutate(values = str_remove_all(estimate_text, "Estimate: | USD"), # Remove unnecessary text
+         values = str_remove_all(values, ",")) %>%           # Remove commas
+  separate(values, into = c("before", "after"), sep = " – ") %>% # Split into before and after
+  mutate(across(c(before, after), as.numeric))          # Convert to numeric
+
+# Extracting the minimum and maximum vectors
+min_estimate <- result$before
+max_estimate <- result$after
+print(min_estimate)
+print(min_estimate)
+```
+:::
+
+
+## {auto-animate=true}
+
+## What if I want to get the Sold price?
+
+::: {.fragment}
+
+::: {style="font-size: 3em;"}
+Is there a way to do that automatically?
+:::
+
+:::
+
+::: columns
+
+::: {.column width="70%"}
+
+::: {.fragment}
+![](https://www.meme-arsenal.com/memes/98e668cdda55e260875450a9b3ddd626.jpg){.nostretch fig-align="center" width="700px"}
+:::
+
+:::
+
+::: {.column width="30%"}
+
+::: {.fragment}
+
+### We need to log in to get that data!
+
+:::
+
+:::
+
+::::
+
+
+## Log in to get more information!
+
+::: fragment
+1.  Press the "Log In" botton:
+
+```{r}
+log_in_button <- remDr$findElement(using = "xpath", '//a[@data-text-content="Log In"]')
+log_in_button$clickElement()
+```
+:::
+
+::: fragment
+2.  Find the place where we should add the email:
+
+```{r, eval = FALSE}
+email_field <- remDr$findElement(using = "xpath", '//input[@placeholder="Email address"]')
+password_field <- remDr$findElement(using = "xpath", '//input[@placeholder="Password"]')
+```
+:::
+
+::: fragment
+3.  Add this email and password already registered:
+
+```{r, eval = FALSE}
+email_field$sendKeysToElement(list("r.workshop.umd@gmail.com"))
+password_field$sendKeysToElement(list("Workshop123"))
+```
+:::
+
+::: fragment
+4.  Click en "Log In" to return to our original website:
+
+```{r, eval = FALSE}
+login_button <- remDr$findElement(using = "id", 'login-button-id')
+login_button$clickElement()
+```
+:::
+
+## Now try to get the sold price!
+
+::: fragment
+```{r}
+remDr$navigate("https://www.sothebys.com/en/auctions/2012/latin-american-art-n08862.html")
+Sys.sleep(5)
+
+sold_price <- artworks %>% html_node(xpath = './/div[@class="sold"]') %>% html_text(trim = TRUE) %>% str_replace("Lot Sold: ", "")
+sold_price
+```
+:::
+
+## What if I want to build a dataset with this information?
+
+```{r}
+artworks_info <- data.frame(
+      Author = author,
+      Title = title,
+      Min_Estimate = min_estimate,
+      Max_Estimate = max_estimate,
+      Sold_Price = sold_price,
+      stringsAsFactors = FALSE
+    )
+artworks_info
+```
+
+## Close the connection when you are done:
+
+```{r}
+remDr$close()
+```
+
+## Some ethical recommendations:
+
+::: fragment
+1.  **Avoid Overloading the Server**. Use the `Sys.sleep()` function to avoid this.
+:::
+
+::: fragment
+2.  **Give Proper Attribution**
+:::
+
+::: fragment
+3.  **Test on Small Scales First**
+:::
+
+::: fragment
+4.  **If the Website/Platform have an API, use the API**
+:::
+
+------------------------------------------------------------------------
+
+##  {auto-animate="true"}
+
+::: {style="margin-top: 200px; font-size: 3em; color: red;"}
+Don't get crazy about it: use the computer to do the boring stuff!
+:::
+
+##  {auto-animate="true"}
+
+::: {style="margin-top: 100px;"}
+Don't get crazy about it: use the computer to do the boring stuff!
+:::
+
+##  {auto-animate="true"}
+
+::: {style="margin-top: 100px;"}
+Don't get crazy about it: use the computer to do the boring stuff!
+:::
+
+::: columns
+::: {.column width="50%"}
+::: fragment
+### My question:
+
+![](img/my_question_chatgpt.PNG){.nostretch fig-align="center" width="1500px"}
+:::
+:::
+
+::: {.column width="50%"}
+::: fragment
+### ChatGPT's answer:
+
+![](img/chatgpt_answer.PNG){.nostretch fig-align="center" width="700px"}
+:::
+:::
+:::
+
+------------------------------------------------------------------------
+
+## Some recommendations to use chatbots:
+
+::: fragment
+1.  **Avoid ambiguity** and ask for **small tasks** little by little… Divide and conquer!
+:::
+
+::: fragment
+2.  **Trust, but also verify.**
+:::
+
+::: fragment
+Source: @perkel2023chatgpt
+:::
+
+
+------------------------------------------------------------------------
+
+## Scrape multiple pages with for loop:
+
+```{r, eval = FALSE}
+
+remDr <- remoteDriver(remoteServerAddr = "localhost", port = 4567L, browserName = "chrome")
+
+# Intenta abrir el navegador
+remDr$open()
+
+remDr$navigate("https://www.sothebys.com/en/auctions/2012/latin-american-art-n08862.html")
+
+# Columnas del dataframe
+columns <- c("Author", "Title", "Min Estimate", "Max Estimate", "Sold Price", 
+             "Auction Title", "Auction Date", "Sale Total", "Sale Number", 
+             "Lots Count", "Web", "Web Number", "Code", "Year")
+df_empty_total <- data.frame(matrix(ncol = length(columns), nrow = 0),  stringsAsFactors = FALSE)
+df_empty_total[] <- lapply(df_empty_total, as.character)
+
+colnames(df_empty_total) <- columns
+
+# Loop para procesar cada página
+for (web in paginas) {
+  print(paste("Procesando:", web))
+
+  remDr$navigate(web)
+  Sys.sleep(5)
+  
+  # Intentar obtener el número de la última página
+  tryCatch({
+    last_page_number <- remDr$findElement(using = "xpath", '//a[@class="with-border "][last()]')$getElementText() %>% as.integer()
+  }, error = function(e) {
+    print(paste("Error to obtain number of pages:", e$message))
+    last_page_number <- 1
+  })
+  
+  for (i in 1:last_page_number) {
+    print(paste("Page:", i, "from", last_page_number))
+    
+    # Navegar a la página correspondiente
+    remDr$navigate(paste0(web, "?p=", i))
+    Sys.sleep(2)
+    
+    # Intentar verificar el mensaje "Log in to view sale total"
+    tryCatch({
+      sale_total_message <- remDr$findElement(using = "xpath", '//div[contains(text(), "Log in to view sale total")]')
+      if (!is.null(sale_total_message)) {
+        print("Message 'Log in to view sale total' found, refresh the webpage...")
+        remDr$refresh()
+        Sys.sleep(5)
+      }
+    }, error = function(e) {
+      print("Couldn't be found the message 'Log in to view sale total'")
+    })
+    
+    # Extraer la información de las obras de arte
+    artworks_info <- list()
+    
+    # Obtener los elementos de arte en la página
+    tryCatch({
+      page_source <- remDr$getPageSource()[[1]]
+      page_html <- read_html(page_source)
+      artworks <- page_html %>% html_nodes(xpath = '//li[@class="AuctionsModule-results-item"]')
+      
+      author <- artworks %>% html_node(xpath = './/div[@class="title "]/a') %>% html_text(trim = TRUE)
+      title <- artworks %>% html_node(xpath = './/div[@class="description"]') %>% html_text(trim = TRUE)
+      estimate_text <- artworks %>% html_node(xpath = './/div[@class="estimate"]') %>% html_text(trim = TRUE)
+      estimates <- str_replace_all(estimate_text, "Estimate: |USD", "") %>% str_split(" – ") %>% .[[1]]
+      min_estimate <- ifelse(length(estimates) >= 1, estimates[1], NA)
+      max_estimate <- ifelse(length(estimates) == 2, estimates[2], NA)
+      sold_price <- artworks %>% html_node(xpath = './/div[@class="sold"]') %>% html_text(trim = TRUE) %>% str_replace("Lot Sold: ", "")
+      
+      auction_title <- page_html %>% html_node(xpath = '//div[@class="AuctionsModule-auction-title"]') %>% html_text(trim = TRUE)
+      auction_date <- page_html %>% html_node(xpath = '//div[@class="AuctionsModule-auction-info"]') %>% html_text(trim = TRUE)
+      sale_total <- page_html %>% html_node(xpath = '//div[@class="AuctionsModule-auction-info-totalPrice"]') %>% html_text(trim = TRUE)
+      sale_number <- page_html %>% html_node(xpath = '//div[@class="AuctionsModule-auction-info-saleNumber"]') %>% html_text(trim = TRUE)
+      lots_count <- page_html %>% html_node(xpath = '//div[@class="AuctionsModule-lotsCount"]') %>% html_text(trim = TRUE)
+      
+      artworks_info <- data.frame(
+        Author = author,
+        Title = title,
+        Min_Estimate = min_estimate,
+        Max_Estimate = max_estimate,
+        Sold_Price = sold_price,
+        stringsAsFactors = FALSE
+      )
+      artworks_info$Auction_Title = auction_title
+      artworks_info$Auction_Date = auction_date
+      artworks_info$Sale_Total = sale_total
+      artworks_info$Sale_Number = sale_number
+      artworks_info$Lots_Count = lots_count
+      artworks_info$Web = web
+      artworks_info$Web_Number = i
+    
+    }, error = function(e) {
+      print(paste("Error scraping data:", e$message))
+    })
+    
+    df_empty_total <- bind_rows(df_empty_total, artworks_info)
+    
+    print(paste("Data extract from the page", i, " from", web))
+  }
+}
+
+# Guardar el dataframe en Excel
+write.xlsx(df_empty_total, "dataframe_auctions_LatinAmerica.xlsx")
+remDr$close()
+```
+
+## References
+
+::: {#refs}
+:::
+
+::: {.center .middle}
+## Thank you! Questions? {.center}
+
+</br>
+
+[`r fontawesome::fa("envelope")` guadag12\@umd.edu](mailto:guadag12@umd.edu)
+
+[`r fontawesome::fa("link")` https://guadagonzalez.com/](https://guadagonzalez.com/)
+
+[`r fontawesome::fa("github")` \@guadag12](http://github.com/guadag12)
+:::

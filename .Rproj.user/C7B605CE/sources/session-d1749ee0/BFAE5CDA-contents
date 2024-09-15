@@ -1,0 +1,21 @@
+
+# What is Selenium? Why use Selenium?
+
+- Selenium is an **open-source framework** used for automating web browsers. Allow us to **interact with web elements on web pages as if a human user were interacting with the browser**. Example: We will see the mouse simulating the movement of us in the webpage.
+
+- It is supported by R in the package **RSelenium**.
+
+# When to Use Selenium:
+
+1. **Dynamic Web Pages:** Use it when dealing with web pages that heavily rely on JavaScript for content loading  (e.g., infinite scrolling, AJAX calls -updated asynchronous-, or content that appears after certain user actions like clicking buttons or logging in). Example: Javascripts websites ([https://www.nytimes.com/](https://www.nytimes.com/))
+
+2. **Interactive Elements:** If your task involves interacting with forms, dropdowns, modals, or other interactive web elements, Selenium's ability to simulate clicks, keystrokes, and other actions makes it the right choice.
+
+3. **Testing and Automation:** Selenium is ideal for automated testing of web applications across multiple browsers and platforms, enabling you to validate user flows and functionality without manual intervention.
+
+
+## When NOT use Selenium:
+
+1. **Static Web Pages:** For websites where content is loaded directly in the HTML (i.e., static sites without heavy JavaScript), rvest is straightforward and efficient for extracting data. Example: [GVPT Faculty](https://gvpt.umd.edu/facultystaff/Faculty)
+
+2. **Simple Scraping Tasks:** Use rvest when you need to extract data from a website without the need for user interactions or navigating complex workflows. It excels at tasks like pulling tables, lists, or text data from clearly defined HTML structures. Example: [Wikipedia's pages](https://es.wikipedia.org/wiki/San_Carlos_de_Bariloche)

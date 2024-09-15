@@ -1,0 +1,28 @@
+{
+    "sources": [
+        {
+            "author": [
+                {
+                    "family": "Perkel",
+                    "given": "J. M."
+                }
+            ],
+            "container-title": "Nature (London)",
+            "id": "perkel2023chatgpt",
+            "issue": "7964",
+            "issued": {
+                "date-parts": [
+                    [
+                        2023
+                    ]
+                ]
+            },
+            "note": "[Online]",
+            "page": "422-423",
+            "title": "Six tips for better coding with ChatGPT",
+            "type": "article-journal",
+            "volume": "618"
+        }
+    ],
+    "project_biblios": []
+}

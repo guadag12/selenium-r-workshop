@@ -1,0 +1,54 @@
+#install.packages("selenium")
+#install.packages("selenider")
+
+library(selenider)
+library(httr2)
+library(dplyr)
+Sys.setenv(GITHUB_PAT = "your_personal_access_token_here")
+
+session <- selenider_session("selenium", browser = "chrome")
+open_url("https://www.wikipedia.com/")
+open_url("https://www.wikipedia.com/", timeout = 120)
+
+title <- session %>% find_element("h1") %>% elem_text()
+print(title)
+---
+  java -version
+
+library(wdman)
+selenium(retcommand=T)
+  
+library(RSelenium)
+library(rvest)
+library(dplyr)
+
+# Start RSelenium
+
+# Note: Make sure Docker is running if you're using the Docker version of Selenium
+rD <- rsDriver(browser = "chrome", chromever = "114.0.5735.90",  port = 4567L)
+#114.0.5735.90
+rD <- rsDriver(browser = "chrome", 
+               chromever = "114.0.5735.90", # Ignorar la búsqueda automática
+               verbose = FALSE, 
+               port = 4567L,
+               extraCapabilities = list(
+                 "chromeOptions" = list(
+                   binary = "C:/Program Files/Google/Chrome/Application/chrome.exe",
+                   # Si has descargado el chromedriver manualmente, utiliza este argumento
+                   chromedriver = "C:/webdriver/chromedriver.exe"
+                 )
+               ))
+
+remDr <- rD$client
+
+
+library(wdman)
+binman::rm_platform("chromedriver")
+chromedriver <- wdman::chrome(port = 4567L)
+
+rD <- rsDriver()
+remDr <- chromedriver[["client"]]
+
+
+# open the webpage
+remDr$navigate("https://www.pexels.com/search/nature/")

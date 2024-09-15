@@ -1,0 +1,652 @@
+---
+title: "Assessing Women's Representation in the U.S. Congress"
+subtitle: "A Quantitative Analysis Using Web Scraping Techniques to Estimate Gender Parity"
+author: 
+  - name: "<h4><strong>Guadalupe González</strong></h4>"
+    email: "guadag12@umd.edu<br></br>"
+date: 09/06/2024
+date-format: "MMM D, YYYY"
+bibliography: references.bib
+execute: 
+  echo: true
+format: 
+  revealjs:
+    width: 1600
+    height: 900
+    incremental: false
+    footer: "<div class='custom-footer'><span>Scraping with [RSelenium](https://github.com/ropensci/RSelenium)</span><img src='https://github.com/guadag12/repo_datasets/raw/master/logo-umd/umd.png' class='footer-logo' /></div>"
+    theme: [default, style]
+    link-external-newwindow: true
+    df-print: kable
+    footer-logo-link: "https://umd.edu/"
+    chalkboard: true
+    smaller: true
+    title-slide-attributes:
+      data-background-color: "#e21833"
+from: markdown+emoji
+---
+
+```{r, echo = FALSE, warning=FALSE, message = FALSE}
+library(tidyverse)
+library(ggplot2)
+library(ggthemes)
+library(ggplot2)
+library(showtext)
+library(ggplot2)
+library(rsvg)
+library(grid)
+library(dplyr)
+
+
+library(sysfonts)
+# Cargar la fuente
+font_add(family = "CustomFont", regular = "C:/Users/User/Documents/GitHub/selenium-workshop/Amiri-Regular/Amiri-Regular.ttf")
+showtext_auto()
+
+#logo <- rsvg::rsvg("C:/Users/User/Documents/GitHub/selenium-workshop/logo.svg")
+#logo_grob <- rasterGrob(logo, interpolate = TRUE)
+
+logo <- png::readPNG("C:/Users/User/Documents/GitHub/selenium-workshop/logo.png")
+logo_grob <- rasterGrob(logo, interpolate = TRUE)
+
+# Crear el tema personalizado
+theme_umd <- function() {
+  theme_minimal(base_family = "Arial") +  # Set a default font family for the rest
+    theme(
+      # Title with custom font
+      plot.title = element_text(family = "CustomFont", face = "bold", color = "#CC0000", size = 50),
+      
+      # Subtítulo en negro, más pequeño que el título
+      plot.subtitle = element_text(face = "plain", color = "#000000", size = 45),
+      
+      # Caption en gris, más pequeño que el subtítulo
+      plot.caption = element_text(face = "plain", color = "#808080", size = 43),
+      
+      # Nombres de los ejes como el caption
+      axis.title = element_text(face = "plain", color = "#808080", size = 43),
+      text = element_text(face = "plain", color = "#808080", size = 40),
+      
+      # Ticks en negro y líneas dashed en gris para la escala
+      axis.ticks = element_line(color = "#000000"),
+      axis.ticks.length = unit(0.2, "cm"),
+      panel.grid.major = element_line(color = "#D3D3D3", linetype = "dashed"),
+      panel.grid.minor = element_line(color = "#D3D3D3", linetype = "dashed"),
+      plot.margin = margin(t = 5, r = 5, b = 5, l = 5) # Ajustar los márgenes para el logo
+      
+    )
+}
+```
+
+# How was the process?
+
+1. Extract data from the [members of US Congress website](https://www.congress.gov/members)
+
+2. Transform the data: clean it and add new info (e.g., gender).
+
+3. Analyze the information using visualization techniques.
+
+# Scraping Data on Members of US Congress!
+
+![](members_image.png){fig-align="center" width=200}
+
+Website: [https://www.congress.gov/members](https://www.congress.gov/members)
+
+
+# Use Rvest and RSelenium Packages to scrape data! {.smaller}
+
+---
+
+:::: {.columns}
+
+::: {.column width="50%"}
+### 1. Connect to Google Chrome and extract the source code of the website
+
+```{r, eval=FALSE}
+library(httr)
+library(RSelenium)
+library(tidyverse)
+library(netstat)
+library(rvest)
+
+binman::list_versions("chromedriver")
+
+rD <- rsDriver(browser = "chrome", 
+               chromever = "127.0.6533.119", 
+               verbose = FALSE, 
+               port = free_port()
+)
+
+remDr <- rD[["client"]]
+
+remDr$navigate("https://www.congress.gov/members")
+
+Sys.sleep(5)
+
+page_source <- remDr$getPageSource()[[1]]
+
+page_html <- read_html(page_source)
+```
+:::
+
+::: {.column width="50%"}
+### 2. Extract the info and convert it into a data.frame:
+```{r, eval=FALSE}
+names <- page_html |> 
+  html_nodes(".result-heading a") |> 
+  html_text()
+
+members_urls <- paste0("https://www.congress.gov", 
+                       page_html |> html_nodes(".result-heading a") |>
+                        html_attr("href"))
+
+states <- page_html |> 
+  html_nodes(".result-item:contains('State:') span") |> 
+  html_text()
+
+parties <- page_html |> 
+  html_nodes(".result-item:contains('Party:') span") |> 
+  html_text()
+
+service_nodes <- page_html |> 
+  html_nodes(".result-item:contains('Served:') ul.member-served")
+
+service <- service_nodes |> lapply(function(x) { x |> html_nodes("li") |> 
+    html_text() |> paste(collapse = ", ")}) |> 
+  unlist()
+
+# Crear un dataframe temporal para la página actual
+datos_pagina <- data.frame(
+  Names = names,
+  State = states,
+  Party = parties,
+  Service = service,
+  Members_URL = members_urls,
+  stringsAsFactors = FALSE
+)
+```
+:::
+
+::::
+
+
+# After that we collect our data and look like this:  {.smaller}
+
+```{r, warning = FALSE, message=FALSE}
+library(kableExtra)
+library(gt)
+
+data_congress<- read.csv("datos_congreso.csv")
+data_congress |> head() |> gt()
+```
+
+:::{.text-center-middle}
+# How do we see the number of women and men who are re-elected to office throughout history? Is there a difference by gender?{.middle}
+:::
+
+
+# After there is a huge amount of thigs that we might need to add:  {.smaller}
+
+1. Need to add the variable Gender
+2. Need to have a more clear dataset that stablish who is getting relected, their gender and in which year
+
+# Adding gender: import the data  {.smaller}
+
+1. Import the dataset:
+```{r}
+library(tidyverse)
+name_gender_dataset <- read.csv("name_gender_dataset.csv") 
+
+name_gender_df <- name_gender_dataset |>
+  group_by(Name) |>            # Agrupar por Nombre y Género
+  filter(Probability == max(Probability)) |>  # Filtrar solo la fila con la mayor probabilidad dentro de cada grupo
+  ungroup() 
+
+name_gender_df |> head() |> gt()
+```
+
+Source: [UC Irvine Machine Learning Repository](https://archive.ics.uci.edu/dataset/591/gender+by+name)
+
+
+# Adding gender: clean and transform the datasets {.smaller}
+
+
+2. Make sure that both names are writed exacly the same way:
+```{r}
+data_congress <- data_congress |>
+  mutate(
+    First_Name = str_extract(Name, "^[^\\s]+"),
+    First_Name = str_to_lower(First_Name)
+  )
+data_congress |> head(3) |> gt()
+```
+
+
+```{r}
+name_gender_df <- name_gender_df |>
+  transmute( Name = str_to_lower(Name, "[^a-z]"), Gender)
+name_gender_df |> head(3) |> gt()
+```
+
+# Adding gender: make a join between both datasets  {.smaller}
+
+3. Join them together!
+```{r}
+data_congress <- data_congress |> left_join(name_gender_df, by =c("First_Name"="Name") )
+data_congress |> head() |> gt()
+```
+
+
+# Recognizing re-election and re-election years!  {.smaller}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+```{r}
+library(splitstackshape)
+data_congress<- data_congress |>
+  mutate(
+    Service = ifelse(
+      str_detect(Service, ", [0-9]{4}"),  
+      str_replace(Service, "(, )([0-9]{4})", 
+                  paste0(", ", str_extract(Service, "^[^:]+"), " \\2")),  
+      Service
+    ),
+    Service = str_replace_all(Service, "Present", "2024")
+  ) 
+
+data_congress<- cSplit(data_congress, splitCols = "Service", sep = ",")
+
+add_colon <- function(service) {
+  if (is.na(service)) return(NA)
+  return(str_replace(service, "^(House|Senate|Resident Commissioner)\\s(\\d)", "\\1: \\2"))
+}
+
+data_congress <- data_congress |>
+  mutate(Service_1 = sapply(Service_1, add_colon),
+         Service_2 = sapply(Service_2, add_colon),
+         Service_3 = sapply(Service_3, add_colon))
+
+service_1<- data_congress |>
+  select(X:Gender, Service=Service_1)
+
+service_2<- data_congress |>
+  select(X:Gender, Service=Service_2)
+
+service_3<- data_congress |>
+  select(X:Gender, Service=Service_3)
+
+data<- rbind(service_1, service_2, service_3)
+
+data <- cSplit(data, 'Service', sep=":")
+data <- data |> rename(Chamber_=Service_1, Year=Service_2)
+data <- data |> drop_na(Chamber_, Year)
+```
+:::
+
+::: {.column width="50%"}
+```{r, echo = FALSE}
+data |> head() |> gt()
+```
+:::
+
+::::
+
+---
+
+# More data transformation!
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+```{r}
+expand_years <- function(service_years) {
+  if (is.na(service_years)) return(NA)
+  year_range <- str_split(service_years, "-")[[1]]
+  if(length(year_range) < 2) return(NA)  
+  start_year <- as.numeric(year_range[1])
+  end_year <- as.numeric(year_range[2])
+  if(is.na(start_year) | is.na(end_year)) return(NA)  
+  years <- seq(start_year, end_year)
+  return(paste(years, collapse = ","))
+}
+
+data <- data |>
+  mutate(Service_2_Years_Expanded = sapply(Year, expand_years),
+         Service_2_Years_Expanded = str_remove(Service_2_Years_Expanded, ",\\d+$"))
+
+data_house <- data |> filter(Chamber_ == "House")
+
+data_house <- data_house |>
+  mutate(Service_2_Years_Impares = sapply(Service_2_Years_Expanded, function(x) {
+    years <- str_extract_all(x, "\\d+")[[1]]  
+    impares <- years[seq(1, length(years), by = 2)] 
+    return(paste(impares, collapse = ","))  
+  }))
+data_house <- cSplit(data_house, "Service_2_Years_Impares", sep = ",")
+
+data_house_ <- data_house |>
+  select(X, Party, Gender, Chamber_, Service_2_Years_Impares_01:Service_2_Years_Impares_30) |>
+  pivot_longer(cols = starts_with("Service_2_Years_Impares_"), 
+               names_to = "Service", values_to = "Year") |>
+    arrange(X, Year) |>
+    filter(!is.na(Year))
+
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+data_house_ |> head() |> gt()
+```
+:::
+
+::::
+
+---
+
+### What it is the percentage of women in the House of Representative today?  {.smaller}
+
+:::: {.columns}
+
+::: {.column width="40%"}
+```{r, warning = FALSE}
+data_plot1 <- data_house_ |>
+  filter(Year == 2023) |>
+  group_by(Gender) |>
+  summarise(count = n()) |>
+  ungroup() |>
+  mutate(percentage= round(count/sum(count)*100,1),
+         Gender = case_when(
+           Gender == "M" ~ "Male",
+           Gender == "F" ~ "Female",
+           T ~ "Others"
+         ))
+
+data_plot1 <- data_plot1 |>
+  ggplot(aes(x=Gender, y = count,  fill = Gender)) +
+  geom_bar(stat="identity") +
+  geom_text(aes(x=Gender, y = count, label = percentage),
+            size = 4, color = "black", vjust = -0.9) +
+  theme_umd() +
+  scale_fill_manual(values = c("#ffd000", "#e21833", "#434a4f")) +
+  labs(title= "Evolution of the amount of Women in the House of Representative",
+       subtitle = "From 1939 to 2024",
+       caption = "https://www.congress.gov/members", 
+       x = "Date", y = "Percentage")
+```
+:::
+
+::: {.column width="60%"}
+```{r, echo=FALSE,fig.align='center', fig.width=16, fig.height=10}
+data_plot1 
+```
+:::
+
+::::
+
+---
+
+### Can we plot the evolution of the percentage of women in the House of Representative ?  {.smaller}
+
+:::: {.columns}
+
+::: {.column width="40%"}
+```{r, warning = FALSE}
+data_count_year<- data_house_ |>
+  group_by(Year) |>
+  summarise(count_collected_by_year = n())
+data_count_gender_year <- data_house_ |>
+  group_by(Gender, Year) |>
+  summarise(count_gender = n()) |>
+  filter(Gender == "F")
+plot2 <- data_count_year |>
+  left_join(data_count_gender_year, by = "Year") |>
+  filter(Year %% 2 != 0) |>
+  mutate(percentage = round(count_gender/ count_collected_by_year*100,1))
+P2<- plot2 |>
+  ggplot( aes(x=Year, y=percentage)) +
+  geom_point(color = "#ffd000", alpha = 0.8) + 
+  geom_area(fill = "#ffd000", alpha = 0.3) + 
+  theme_umd() +
+  labs(title= "Evolution of the amount of Women in the House of Representative",
+         subtitle = "From 1939 to 2024",
+         caption = "https://www.congress.gov/members", 
+         x = "Date", y = "Percentage")
+```
+:::
+
+:::{.column width="60%"}
+
+```{r, echo=FALSE,fig.align='center', fig.width=16, fig.height=10}
+P2
+```
+:::
+
+::::
+
+---
+
+### Is there any relationship between the percentage of women in congress and the GDP of the USA?  {.smaller}
+
+:::: {.columns}
+
+::: {.column width="40%"}
+```{r, warning = FALSE}
+options(scipen = 999)
+library(countrycode)
+gdp_raw<- read_csv("~/GitHub/gvpt_maths_camp/data-raw/API_NY.GDP.MKTP.CD_DS2_en_csv_v2_3403845.csv",
+                    skip = 4, col_select = 1:66)
+gdp_raw <- pivot_longer(gdp_raw, cols = `1960`:`2021`, names_to = "year", values_to = "gdp") |>
+  janitor::clean_names() |>
+  mutate(region = countrycode(country_name, "country.name", "region")) |>
+  drop_na(region) |>
+  relocate(region, .after = "country_code") |>
+  transmute(country_name, country_code, region, year=as.integer(year), gdp)
+gdp_raw<- gdp_raw |>
+  filter(country_name == "United States")
+P3 <- plot3 <- plot2 |>
+  left_join(gdp_raw, by = c("Year"="year")) |>
+  drop_na(percentage, gdp) |>
+  select(Year, percentage,gdp )
+cor(plot3) |> as.data.frame() |> gt()
+```
+:::
+
+::: {.column width="60%"}
+```{r, fig.align='center'}
+P3 |> head() |> gt()
+```
+
+:::
+::::
+
+---
+
+
+:::: {.columns}
+::: {.column width="50%"}
+```{r, echo=TRUE,fig.align='center', fig.width=16, fig.height=10}
+#| code-fold: true
+#| code-summary: "expand for full code"
+plot3 |>
+  ggplot( aes(x=Year, y=percentage)) +
+  geom_point(color = "#ffd000", alpha = 0.8) + 
+  geom_area(fill = "#ffd000", alpha = 0.3) + 
+  theme_umd() +
+  labs(title= "Evolution of the amount of Women in the House of Representative",
+         subtitle = "From 1939 to 2024",
+         caption = "https://www.congress.gov/members", 
+         x = "Date", y = "Percentage")
+```
+:::
+
+::: {.column width="50%"}
+```{r, echo=TRUE, fig.align='center', fig.width=16, fig.height=10}
+#| code-fold: true
+#| code-summary: "expand for full code"
+plot3 |>
+  ggplot( aes(x=Year, y=gdp)) +
+  geom_point(color = "#e21833", alpha = 0.8) + 
+  geom_area(fill = "#e21833", alpha = 0.3) + 
+  theme_umd() +
+  labs(title= "Evolution of the GDP of USA",
+                caption = "https://data.worldbank.org/indicator/NY.GDP.MKTP.CD", 
+         x = "Date", y = "Percentage")
+```
+:::
+
+::::
+
+---
+
+### The percentage of women is increased when USA increase their GDP?  {.smaller}
+
+```{r, echo=TRUE,fig.align='center', fig.width=16, fig.height=10}
+#| code-fold: true
+#| code-summary: "expand for full code"
+ggplot(plot3, aes(gdp, percentage)) +            
+  geom_point() +                                      
+  stat_smooth(method = "lm", 
+              formula = y ~ x, 
+              geom = "smooth", 
+                color = "#951022") +
+  theme_umd() +
+  labs(title= "Linear regression where y = percentage and x = gdp",
+         x = "GDP", y = "Percentage")
+```
+
+---
+
+### Can we visualize the re-election in the House of representative?  {.smaller}
+
+::: {.panel-tabset .nav-pills}
+
+### Code
+
+```{r, eval = FALSE}
+data_house_plot_arc  <-  
+  group_by(X, Party, Gender) |>
+  mutate(target = lead(Year)) |>
+  filter(!is.na(target)) |>
+  dplyr::select(source = Year, target)
+
+mygraph <- graph_from_data_frame(data_house |> 
+                                   select(source, target) |>
+                                   filter(Gender == "F"))
+
+p2 <-  ggraph(mygraph, layout="linear") +
+  geom_edge_arc(edge_colour="black", edge_alpha=0.3, edge_width=0.2) +
+  geom_node_point( color="#69b3a2", size=2) +
+  geom_node_text( aes(label=name), repel = FALSE, size=2, color="#69b3a2", nudge_y=-0.1) +
+  theme_void() +
+  theme(
+    legend.position="none",
+    plot.margin=unit(rep(2,4), "cm")
+  )
+p2
+
+```
+
+
+### Plot
+
+![](senate_all.png)
+:::
+
+---
+
+
+### Can we visualize the re-election in the House of representative for males?  {.smaller}
+
+::: {.panel-tabset .nav-pills}
+
+### Code
+
+```{r, eval = FALSE}
+data_senate_links_M <- data_senate_ |> 
+  filter(Gender == "M") |>
+  select(source, target) |>
+  mutate(source = as.numeric(source),
+         target = as.numeric(target)) |>
+  arrange(source) 
+
+mygraph_M <- graph_from_data_frame(data_senate_links_M)
+
+p_m<- ggraph(mygraph_M, layout="linear") + 
+  geom_edge_arc(edge_colour="black", edge_alpha=0.2, edge_width=0.3, fold=TRUE) +
+  geom_node_point(, alpha=0.5) +
+  scale_size_continuous(range=c(0.5,8)) +
+  geom_node_text(aes(label=name), angle=65, hjust=1, nudge_y = -1.1, size=2.3) +
+  theme_void() +
+  theme(
+    legend.position="none",
+    plot.margin=unit(c(0,0,0.4,0), "null"),
+    panel.spacing=unit(c(0,0,3.4,0), "null")
+  ) +
+  expand_limits(x = c(-1.2, 1.2), y = c(-5.6, 1.2)) 
+p_m
+
+```
+
+### Plot
+
+![](senate_m.png)
+:::
+
+
+---
+
+### Can we visualize the re-election in the House of representative for women?  {.smaller}
+
+::: {.panel-tabset .nav-pills}
+
+### Code
+
+```{r, eval = FALSE}
+data_senate_links_F <- data_senate_ |> 
+  filter(Gender == "F") |>
+  select(source, target) |>
+  mutate(source = as.numeric(source),
+         target = as.numeric(target)) |>
+  arrange(source) 
+mygraph_F <- graph_from_data_frame(data_senate_links_F)
+
+p_f<- ggraph(mygraph_F, layout="linear") + 
+  geom_edge_arc(edge_colour="black", edge_alpha=0.2, edge_width=0.3, fold=TRUE) +
+  geom_node_point(, alpha=0.5) +
+  scale_size_continuous(range=c(0.5,8)) +
+  geom_node_text(aes(label=name), angle=65, hjust=1, nudge_y = -1.1, size=2.3) +
+  theme_void() +
+  theme(
+    legend.position="none",
+    plot.margin=unit(c(0,0,0.4,0), "null"),
+    panel.spacing=unit(c(0,0,3.4,0), "null")
+  ) +
+  expand_limits(x = c(-1.2, 1.2), y = c(-5.6, 1.2)) 
+p_f
+
+```
+
+### Plot
+
+![](senate_f.png)
+
+:::
+
+::: {.center .middle}
+
+## Thank you!  {.center}
+
+</br>
+
+### Questions? Feel free to write to me ❤️  {.center}
+
+</br>
+
+[`r fontawesome::fa("twitter")` @guadag12](https://twitter.com/guadag12)  
+[`r fontawesome::fa("github")` @guadag12](http://github.com/guadag12)  
+[`r fontawesome::fa("paper-plane")` guadag12@umd.edu](mailto:guadag12@umd.edu)
+
+:::
+

@@ -1,0 +1,141 @@
+---
+title: "Instructions to run ChromeDriver in R"
+author: Guadalupe González [guadag12@umd.edu](mailto:guadag12@umd.edu)
+editor: visual
+format: 
+  html:
+    toc: true
+    toc-depth: 2  # Optional: Specify the depth of the TOC, e.g., 2 for H2 and H3
+    toc-location: left  # Optional: Place the TOC on the left (options: left, right, inline)
+  pdf:
+    toc: true
+    toc-depth: 2  # Same depth specification for PDF output
+  docx:
+    toc: true
+    toc-depth: 2  # TOC for Word document format
+execute:
+  eval: false  # This sets eval: false for all code chunks
+---
+
+## Setting Up RSelenium with ChromeDriver on Windows
+
+1. **Check Your Google Chrome Version:**
+
+Navigate to chrome://settings/help in your Chrome browser to determine the version of Google Chrome currently installed.
+
+![](~/GitHub/selenium-r-art-gallery/settings_help_windows.PNG)
+
+
+2. **Download the appropriate ChromeDriver:**
+
+a. Visit [Chrome for Testing](https://googlechromelabs.github.io/chrome-for-testing/) and download the **ChromeDriver version** that matches your Chrome version.
+
+b. Place the downloaded ChromeDriver in the following directory:
+"C:\Users\User\AppData\Local\binman\binman_chromedriver\win32\128.0.6613.121"
+
+3. **Verify Installation:**
+
+Ensure that the ChromeDriver is installed correctly by running the following command in R:
+```{r}
+# Check and install RSelenium if not already installed
+if (!requireNamespace("RSelenium", quietly = TRUE)) {
+  install.packages("RSelenium")
+} if (!requireNamespace("wdman", quietly = TRUE)) {
+  install.packages("wdman")
+}
+
+library(wdman)
+wdman::selenium()
+```
+
+4. **Start Selenium Server:**
+
+a. Run the following command in R:
+```{r}
+wdman::selenium(retcommand = TRUE, check = FALSE)
+
+```
+
+b. Copy the returned command output and execute it in the Command Prompt (CMD). For example:
+
+```{bash}
+"C:\\PROGRA~2\\COMMON~1\\Oracle\\Java\\javapath\\java.exe c(\"-Dwebdriver.chrome.driver=\\\"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\binman\\\\binman_chromedriver\\\\win32\\\\128.0.6613.121/chromedriver.exe\\\"\", \"-Dwebdriver.chrome.driver=\\\"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\binman\\\\binman_chromedriver\\\\win32\\\\128.0.6613.121/LICENSE.chromedriver\\\"\", \"-Dwebdriver.chrome.driver=\\\"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\binman\\\\binman_chromedriver\\\\win32\\\\128.0.6613.121/THIRD_PARTY_NOTICES.chromedriver\\\"\") -Dwebdriver.gecko.driver=\"C:\\Users\\User\\AppData\\Local\\binman\\binman_geckodriver\\win64\\0.35.0/geckodriver.exe\" -Dphantomjs.binary.path=\"C:\\Users\\User\\AppData\\Local\\binman\\binman_phantomjs\\windows\\2.1.1/phantomjs-2.1.1-windows/bin/phantomjs.exe\" -jar \"C:\\Users\\User\\AppData\\Local\\binman\\binman_seleniumserver\\generic\\4.0.0-alpha-2/selenium-server-standalone-4.0.0-alpha-2.jar\" -port 4567"
+```
+
+
+c. Connect RSelenium to the Running Selenium Server:
+
+In R, set up the remote driver connection:
+```{r}
+library(RSelenium)
+
+# Assuming Selenium is running on the specified port
+remDr <- remoteDriver(remoteServerAddr = "localhost", port = ______L, browserName = "chrome")
+
+# Attempt to open the browser
+remDr$open()
+```
+
+
+## Setting Up RSelenium with ChromeDriver on Mac
+1. **Check Your Google Chrome Version:**
+
+Open Google Chrome and navigate to [chrome://settings/help](chrome://settings/help) to find out your current Chrome version.
+
+![](~/GitHub/selenium-r-art-gallery/settings_help_windows.PNG)
+
+
+2. **Download the Appropriate ChromeDriver:**
+
+a. Download the ChromeDriver matching your Chrome version from [Chrome for Testing](https://googlechromelabs.github.io/chrome-for-testing/).
+
+b. Move the downloaded file to a directory, for example:
+
+```{bash}
+/usr/local/bin/
+```
+
+
+3. **Verify Installation:**
+
+Check if the ChromeDriver is correctly set up by running:
+
+```{r}
+# Check and install RSelenium if not already installed
+if (!requireNamespace("RSelenium", quietly = TRUE)) {
+  install.packages("RSelenium")
+} if (!requireNamespace("wdman", quietly = TRUE)) {
+  install.packages("wdman")
+}
+
+wdman::selenium()
+```
+
+3. Start Selenium Server:
+
+a. Execute the following command in R:
+```{r}
+wdman::selenium(retcommand = TRUE, check = FALSE)
+```
+
+b. Run the generated command in the Terminal. Example:
+
+```{bash}
+/usr/bin/java -Dwebdriver.chrome.driver="/usr/local/bin/chromedriver" -jar "/usr/local/bin/selenium-server-standalone.jar" -port 4567
+```
+
+
+c. Connect RSelenium to the Running Selenium Server:
+
+In R, establish the remote connection as follows:
+
+```{r}
+library(RSelenium)
+
+# Assuming Selenium is running on the specified port
+remDr <- remoteDriver(remoteServerAddr = "localhost", port = ______L, browserName = "chrome")
+
+# Attempt to open the browser
+remDr$open()
+```
+
