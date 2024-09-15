@@ -435,6 +435,11 @@
 </section>
 <section id="materials-for-todays-class" class="slide level2">
 <h2>Materials for today’s class:</h2>
+<p><br> <br> <br> <br> <br></p>
+<div class="fragment">
+<!-- -->
+<h3 id="httpsgithub.comguadag12selenium-r-workshop">https://github.com/guadag12/selenium-r-workshop</h3>
+</div>
 </section>
 <section id="configuration-issues-first" class="slide level2">
 <h2>Configuration issues first!</h2>
@@ -512,7 +517,7 @@
 <span id="cb3-6"><a href=""></a>wdman<span class="sc">::</span><span class="fu">selenium</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$process
-PROCESS 'file49f467ee5432.bat', finished.
+PROCESS 'file445c6e561e86.bat', finished.
 
 $output
 function (timeout = 0L) 
@@ -520,8 +525,8 @@ function (timeout = 0L)
     infun_read(seleniumdrv, log, "stdout", timeout = timeout, 
         outfile = pfile[["out"]], errfile = pfile[["err"]])
 }
-&lt;bytecode: 0x0000020ef2328538&gt;
-&lt;environment: 0x0000020ef3e46ac0&gt;
+&lt;bytecode: 0x000002279b965538&gt;
+&lt;environment: 0x000002279d485ac0&gt;
 
 $error
 function (timeout = 0L) 
@@ -529,16 +534,16 @@ function (timeout = 0L)
     infun_read(seleniumdrv, log, "stderr", timeout = timeout, 
         outfile = pfile[["out"]], errfile = pfile[["err"]])
 }
-&lt;bytecode: 0x0000020ef232fe28&gt;
-&lt;environment: 0x0000020ef3e46ac0&gt;
+&lt;bytecode: 0x000002279b96ae28&gt;
+&lt;environment: 0x000002279d485ac0&gt;
 
 $stop
 function () 
 {
     seleniumdrv$kill()
 }
-&lt;bytecode: 0x0000020ef232f840&gt;
-&lt;environment: 0x0000020ef3e46ac0&gt;
+&lt;bytecode: 0x000002279b96a840&gt;
+&lt;environment: 0x000002279d485ac0&gt;
 
 $log
 function () 
@@ -546,8 +551,8 @@ function ()
     infun_read(seleniumdrv, log, outfile = pfile[["out"]], errfile = pfile[["err"]])
     as.list(log)
 }
-&lt;bytecode: 0x0000020ef232f680&gt;
-&lt;environment: 0x0000020ef3e46ac0&gt;</code></pre>
+&lt;bytecode: 0x000002279b96a680&gt;
+&lt;environment: 0x000002279d485ac0&gt;</code></pre>
 </div>
 </div>
 </div>
@@ -604,7 +609,7 @@ $chrome$chromedriverVersion
 [1] "128.0.6613.137 (fe621c5aa2d6b987e964fb1b5066833da5fb613d-refs/branch-heads/6613@{#1711})"
 
 $chrome$userDataDir
-[1] "C:\\Users\\User\\AppData\\Local\\Temp\\scoped_dir33380_825320663"
+[1] "C:\\Users\\User\\AppData\\Local\\Temp\\scoped_dir27900_1357527518"
 
 
 $`fedcm:accounts`
@@ -612,7 +617,7 @@ $`fedcm:accounts`
 
 $`goog:chromeOptions`
 $`goog:chromeOptions`$debuggerAddress
-[1] "localhost:51459"
+[1] "localhost:52702"
 
 
 $networkConnectionEnabled
@@ -663,10 +668,10 @@ $`webauthn:virtualAuthenticators`
 [1] TRUE
 
 $webdriver.remote.sessionid
-[1] "2d18a46ae8b375a10b0b3bca35b64adf"
+[1] "7746dd002757bb6309d01e4532225f54"
 
 $id
-[1] "2d18a46ae8b375a10b0b3bca35b64adf"</code></pre>
+[1] "7746dd002757bb6309d01e4532225f54"</code></pre>
 </div>
 </div>
 </section>
@@ -870,7 +875,7 @@ $chrome$chromedriverVersion
 [1] "128.0.6613.137 (fe621c5aa2d6b987e964fb1b5066833da5fb613d-refs/branch-heads/6613@{#1711})"
 
 $chrome$userDataDir
-[1] "C:\\Users\\User\\AppData\\Local\\Temp\\scoped_dir32488_730928065"
+[1] "C:\\Users\\User\\AppData\\Local\\Temp\\scoped_dir27120_539407128"
 
 
 $`fedcm:accounts`
@@ -878,7 +883,7 @@ $`fedcm:accounts`
 
 $`goog:chromeOptions`
 $`goog:chromeOptions`$debuggerAddress
-[1] "localhost:51480"
+[1] "localhost:52724"
 
 
 $networkConnectionEnabled
@@ -929,10 +934,10 @@ $`webauthn:virtualAuthenticators`
 [1] TRUE
 
 $webdriver.remote.sessionid
-[1] "162e098d73badadd6819df38cf057ba7"
+[1] "b8fdf567f156663e72ebcd2244e59de9"
 
 $id
-[1] "162e098d73badadd6819df38cf057ba7"</code></pre>
+[1] "b8fdf567f156663e72ebcd2244e59de9"</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href=""></a><span class="co"># Tell the webpage that we want to scrape</span></span>
 <span id="cb13-2"><a href=""></a>remDr<span class="sc">$</span><span class="fu">navigate</span>(<span class="st">"https://www.sothebys.com/en/auctions/2012/latin-american-art-n08862.html"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>

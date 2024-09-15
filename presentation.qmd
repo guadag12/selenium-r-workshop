@@ -29,6 +29,16 @@ from: markdown+emoji
 
 ## Materials for today's class:
 
+<br>
+<br>
+<br>
+<br>
+<br>
+
+::: fragment
+### https://github.com/guadag12/selenium-r-workshop
+:::
+
 ## Configuration issues first!
 
 We are going to use **Chrome** to do the scraping. So, the following instuctions are needed.
