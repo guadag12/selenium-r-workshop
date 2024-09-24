@@ -15,18 +15,19 @@ This workshop was held at the 2024 Graduate's Methods Workshop of the Department
 
 | 📄 Description | 🌐 Website |
 | ------ | ------ |
-| Presentation | https://guadag12.github.io/selenium-r-workshop/#/title-slide
-| Presentation Code | https://github.com/guadag12/selenium-r-workshop/blob/main/index.qmd
-| Code | https://github.com/guadag12/selenium-r-workshop/blob/main/code.R
-| Instructions for configure your conection to Chrome | https://github.com/guadag12/selenium-r-workshop/blob/main/instructions_to_set_up_rselenium.qmd
+| Presentation | [https://guadag12.github.io/selenium-r-workshop/#/title-slide](https://github.com/guadag12/selenium-r-workshop/blob/main/index.qmd)
+| Presentation Code | [https://github.com/guadag12/selenium-r-workshop/blob/main/index.qmd](https://github.com/guadag12/selenium-r-workshop/blob/main/index.qmd)
+| Code (R) | [https://github.com/guadag12/selenium-r-workshop/blob/main/code.R](https://github.com/guadag12/selenium-r-workshop/blob/main/code.R)
+| Code (Python) | [https://github.com/guadag12/selenium-r-workshop/blob/main/code.py](https://github.com/guadag12/selenium-r-workshop/blob/main/python/python_code.py)
+| Instructions for configure your conection to Chrome | [https://github.com/guadag12/selenium-r-workshop/blob/main/instructions_to_set_up_rselenium.qmd](https://github.com/guadag12/selenium-r-workshop/blob/main/instructions_to_set_up_rselenium.qmd)
 
 
 ## Other links:
 
 | 📄 Description | 🌐 Website |
 | ------ | ------ |
-| ChromeDriver download | https://googlechromelabs.github.io/chrome-for-testing/
-| Selenium | https://www.selenium.dev/
-| RSelenium | https://github.com/ropensci/RSelenium
+| ChromeDriver download | [https://googlechromelabs.github.io/chrome-for-testing/](https://googlechromelabs.github.io/chrome-for-testing/)
+| Selenium | [https://www.selenium.dev/](https://www.selenium.dev/)
+| RSelenium | [https://github.com/ropensci/RSelenium](https://github.com/ropensci/RSelenium)
 
 
