@@ -1,5 +1,5 @@
 # Web Scraping and Data Collection Using RSelenium:
-## _Scraping Sotheby’s art auctions_
+## _Scraping [Sotheby’s art auctions](https://www.sothebys.com/en/)_
 
 This workshop was held at the 2024 Graduate's Methods Workshop of the Department of Politics and Government at the University of Maryland. It covers concepts such as:
 
@@ -9,7 +9,7 @@ This workshop was held at the 2024 Graduate's Methods Workshop of the Department
 4. Recognizing Elements in HTML and CSS
 5. Main functions of Rvest
 6. Main functions in RSelenium
-7. ✨Scraping auctions in  Sotheby’s art auctions✨
+7. ✨Scraping auctions in [Sotheby’s art auctions](https://www.sothebys.com/en/)✨
 
 ## Important information:
 
