@@ -17,7 +17,7 @@ This workshop was held at the 2024 Graduate's Methods Workshop of the Department
 | ------ | ------ |
 | Presentation | https://guadag12.github.io/selenium-r-workshop/#/title-slide
 | Presentation Code | https://github.com/guadag12/selenium-r-workshop/blob/main/index.qmd
-| Code | https://github.com/ropensci/RSelenium
+| Code | https://github.com/guadag12/selenium-r-workshop/blob/main/code.R
 | Instructions for configure your conection to Chrome | https://github.com/guadag12/selenium-r-workshop/blob/main/instructions_to_set_up_rselenium.qmd
 
 
