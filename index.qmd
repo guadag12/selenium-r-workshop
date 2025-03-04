@@ -91,7 +91,7 @@ If you are using Mac, you will download the Mac version that ajust to your Googl
 
     b.  After unzip the download chromedriver, move it the downloaded file to the directory selected in step 2. In my case: "C:/Users/User/AppData/Local/binman/binman_chromedriver/win32"
 
-{{< video chromedriver_set_up.mp4 width="1200" height="650" >}}
+{{< video img/chromedriver_set_up.mp4 width="1200" height="650" >}}
 
 ## 4. **Verify Installation:**
 
@@ -118,6 +118,11 @@ wdman::selenium(retcommand = TRUE, check = FALSE)
 ```
 :::
 
+```{r}
+C:\\PROGRA~2\\COMMON~1\\Oracle\\Java\\javapath\\java.exe c(\"-Dwebdriver.chrome.driver=\\\"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\binman\\\\binman_chromedriver\\\\win32\\\\114.0.5735.90/chromedriver.exe\\\"\", \"-Dwebdriver.chrome.driver=\\\"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\binman\\\\binman_chromedriver\\\\win32\\\\114.0.5735.90/LICENSE.chromedriver\\\"\", \"-Dwebdriver.chrome.driver=\\\"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\binman\\\\binman_chromedriver\\\\win32\\\\114.0.5735.90/THIRD_PARTY_NOTICES.chromedriver\\\"\") -Dwebdriver.gecko.driver=\"C:\\Users\\User\\AppData\\Local\\binman\\binman_geckodriver\\win64\\0.35.0/geckodriver.exe\" -Dphantomjs.binary.path=\"C:\\Users\\User\\AppData\\Local\\binman\\binman_phantomjs\\windows\\2.1.1/phantomjs-2.1.1-windows/bin/phantomjs.exe\" -jar \"C:\\Users\\User\\AppData\\Local\\binman\\binman_seleniumserver\\generic\\4.0.0-alpha-2/selenium-server-standalone-4.0.0-alpha-2.jar\" -port 4567"
+```
+
+
 ::: fragment
 b.  Run the generated command in the Terminal. Example:
 
@@ -136,10 +141,17 @@ In R, establish the remote connection as follows:
 library(RSelenium)
 
 # Assuming Selenium is running on the specified port (the port should be the same that you have in 5.b.)
-remDr <- remoteDriver(remoteServerAddr = "localhost", port = 4567L, browserName = "chrome")
+#remDr <- remoteDriver( browser = "firefox")#remoteServerAddr = "localhost", port = 4567L, 
+binman::list_versions("chromedriver")
 
+driver <- rsDriver(browser = "chrome", port = 9515L, chromever = "114.0.5735.90")
+
+# rD1 <- rsDriver(browser = "chrome", port = 4567L, geckover = NULL, 
+#                chromever = "128.0.6613.121", iedrver = NULL, 
+#                 phantomver = NULL)
+remDr1 <- driver[["client"]] 
 # Attempt to open the browser
-remDr$open()
+remDr1$open()
 ```
 
 ```{r, include=FALSE, echo = FALSE}

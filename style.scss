@@ -186,6 +186,7 @@ details>summary {
   }
   
 .reveal pre.sourceCode code {
+    background-color: $theme-grey2; /* Set your desired background color */
     max-height: 650px;
     overflow: auto;
 }

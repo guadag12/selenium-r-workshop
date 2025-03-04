@@ -19,6 +19,14 @@ if (!requireNamespace("wdman", quietly = TRUE)) {
 wdman::selenium(retcommand = TRUE, check = FALSE) 
 wdman::selenium(retcommand = TRUE, check = FALSE)
 
+library(RSelenium)
+
+# Start Selenium with remoteDriver
+remDr <- remoteDriver(remoteServerAddr = "localhost", port = 4444, browserName = "chrome")
+
+# Open the connection
+remDr$open()
+
 # Alternatively, just start Selenium server without returning a command
 wdman::selenium()
 
